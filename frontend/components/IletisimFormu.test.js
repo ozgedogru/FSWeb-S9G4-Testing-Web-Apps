@@ -15,21 +15,18 @@ test("hata olmadan render ediliyor", () => {
   render(<IletisimFormu />);
 });
 
-test("iletişim formu headerı render ediliyor", () => {
+beforeEach(() => {
   render(<IletisimFormu />);
+});
 
+test("iletişim formu headerı render ediliyor", () => {
   const headerElement = screen.getByText("İletişim Formu");
   expect(headerElement).toBeInTheDocument();
 });
 
 test("kullanıcı adını 5 karakterden az girdiğinde BİR hata mesajı render ediyor.", async () => {
-  render(<IletisimFormu />);
-
   const kullaniciAdi = screen.getByLabelText("Ad*");
   fireEvent.change(kullaniciAdi, { target: { value: "ozge" } });
-
-  const submitButton = screen.getByText("Gönder");
-  fireEvent.click(submitButton);
 
   await waitFor(() => {
     const errorAd = screen.getByTestId("error-ad");
@@ -39,8 +36,6 @@ test("kullanıcı adını 5 karakterden az girdiğinde BİR hata mesajı render 
 });
 
 test("kullanıcı inputları doldurmadığında ÜÇ hata mesajı render ediliyor.", async () => {
-  render(<IletisimFormu />);
-
   const submitButton = screen.getByText("Gönder");
   fireEvent.click(submitButton);
 
@@ -57,8 +52,6 @@ test("kullanıcı inputları doldurmadığında ÜÇ hata mesajı render ediliyo
 });
 
 test("kullanıcı doğru ad ve soyad girdiğinde ama email girmediğinde BİR hata mesajı render ediliyor.", async () => {
-  render(<IletisimFormu />);
-
   const kullaniciAdi = screen.getByLabelText("Ad*");
   fireEvent.change(kullaniciAdi, { target: { value: "ozgen" } });
 
@@ -78,8 +71,6 @@ test("kullanıcı doğru ad ve soyad girdiğinde ama email girmediğinde BİR ha
 });
 
 test('geçersiz bir mail girildiğinde "email geçerli bir email adresi olmalıdır." hata mesajı render ediliyor', async () => {
-  render(<IletisimFormu />);
-
   const kullaniciMail = screen.getByLabelText("Email*");
   fireEvent.change(kullaniciMail, { target: { value: "abcde" } });
 
@@ -93,8 +84,6 @@ test('geçersiz bir mail girildiğinde "email geçerli bir email adresi olmalıd
 });
 
 test('soyad girilmeden gönderilirse "soyad gereklidir." mesajı render ediliyor', async () => {
-  render(<IletisimFormu />);
-
   const submitButton = screen.getByText("Gönder");
   fireEvent.click(submitButton);
 
@@ -106,8 +95,6 @@ test('soyad girilmeden gönderilirse "soyad gereklidir." mesajı render ediliyor
 });
 
 test("ad,soyad, email render ediliyor. mesaj bölümü doldurulmadığında hata mesajı render edilmiyor.", async () => {
-  render(<IletisimFormu />);
-
   const kullaniciAdi = screen.getByLabelText("Ad*");
   fireEvent.change(kullaniciAdi, { target: { value: "ozgen" } });
 
@@ -145,9 +132,21 @@ test("form gönderildiğinde girilen tüm değerler render ediliyor.", async () 
   );
 
   await waitFor(() => {
-    expect(screen.getByTestId("firstnameDisplay")).toBeInTheDocument();
-    expect(screen.getByTestId("lastnameDisplay")).toBeInTheDocument();
-    expect(screen.getByTestId("emailDisplay")).toBeInTheDocument();
-    expect(screen.getByTestId("messageDisplay")).toBeInTheDocument();
+    const ad = screen.getByTestId("firstnameDisplay");
+    const soyad = screen.getByTestId("lastnameDisplay");
+    const mail = screen.getByTestId("emailDisplay");
+    const mesaj = screen.getByTestId("messageDisplay");
+
+    expect(ad).toBeInTheDocument();
+    expect(ad).toHaveTextContent("ozgen");
+
+    expect(soyad).toBeInTheDocument();
+    expect(soyad).toHaveTextContent("dogru");
+
+    expect(mail).toBeInTheDocument();
+    expect(mail).toHaveTextContent("example@example.com");
+
+    expect(mesaj).toBeInTheDocument();
+    expect(mesaj).toHaveTextContent("Hello");
   });
 });
